@@ -146,6 +146,15 @@ int Node::extractData(Node *start_Node, int *lines, float **coords, int *colors,
             cout << "Current Side: " << cur_Node->perm << ". Current Depth = " << cur_Node->current_Depth << endl;
             //inf gain here!
         }
-        cout << "Left Count = "
+        cout << "Left Count = " << cur_Node->LCount << endl;
+        cout << "Right Count = " << cur_Node->RCount << endl;
+        if (start_Node == nullptr) {
+            for (int i=0;i<*lines<i++) {
+                cur_Node->coordinates[0][i] = coords[0][i];
+                cur_Node->coordinates[1][i] = coords[1][i];
+                cur_Node->colors[i] = colors[i];
+                newLine++;
+            }
+        }
     }
 }
