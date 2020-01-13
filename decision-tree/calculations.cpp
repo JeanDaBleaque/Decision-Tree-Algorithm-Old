@@ -90,7 +90,7 @@ float calculation (int *LYellow, int *LRed, int *LGreen, int *RYellow, int *RRed
     return I;
 }
 void getData () {
-    char perm = 'R';
+    char perm = 'M';
     ifstream r_file;
     r_file.open("data.txt");
     int lines = 0;
@@ -123,9 +123,29 @@ int Node::extractData(Node *start_Node, int *lines, float **coords, int *colors,
     int newLine = 0;
     if (start_Node == nullptr) {
         cur_Node = new Node;
-        cur_Node->left_Node = new Node;
-        cur_Node->right_Node = new Node;
         cur_Node->current_Depth = 0;
+        start_Node = cur_Node;
     }
-
+    else {
+        cur_Node = new Node;
+        if (*perm == 'L') {
+            start_Node->left_Node = cur_Node;
+        }
+        else if (*perm == 'R') {
+            start_Node->right_Node = cur_Node;
+        }
+    }
+    float *randCoord;
+    int *randAxis;
+    if (cur_Node) {
+        cout << "Current Node created!" << endl;
+        cout << "Total lines = " << *lines << endl;
+        cur_Node->line = *lines;
+        cur_Node->refreshNode();
+        if (cur_Node->current_Depth < 2) {
+            cout << "Current Side: " << cur_Node->perm << ". Current Depth = " << cur_Node->current_Depth << endl;
+            //inf gain here!
+        }
+        cout << "Left Count = "
+    }
 }
