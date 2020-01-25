@@ -37,7 +37,9 @@ void extractCoords (Node *current_node) {
     int *left_colors;
     float **right_coordinates;
     int *right_colors;
-    int left_count = 0, right_count = 0;
+    int left_count = 0;
+    int right_count = 0;
+    cout << "current" << current_node->line << endl;
     left_coordinates = new float*[2];
     right_coordinates = new float*[2];
     for (int i=0;i<2;i++) {
@@ -53,14 +55,17 @@ void extractCoords (Node *current_node) {
     */
     for (int j=0;j<current_node->line;j++) {
         if (current_node->coordinates[current_node->exp_axis][j]<current_node->exp_coordinate) {
-            left_coordinates[0][j] = current_node->coordinates[0][j];
-            left_coordinates[1][j] = current_node->coordinates[1][j];
-            left_colors[j] = current_node->colors[j];
+            cout << current_node->coordinates[0][j] << endl;
+            left_coordinates[0][left_count] = current_node->coordinates[0][j];
+            left_coordinates[1][left_count] = current_node->coordinates[1][j];
+            left_colors[left_count] = current_node->colors[j];
             left_count++;
+            //hata burada!
         }
         else {
-            right_coordinates[0][j] = current_node->coordinates[0][j];
-            right_coordinates[1][j] = current_node->coordinates[1][j];
+            //cout << current_node->coordinates[0][j] << endl;
+            right_coordinates[0][right_count] = current_node->coordinates[0][j];
+            right_coordinates[1][right_count] = current_node->coordinates[1][j];
             right_colors[j] = current_node->colors[j];
             right_count++;
         }
@@ -72,11 +77,14 @@ void extractCoords (Node *current_node) {
         current_node->left_coordinates[0][p] = left_coordinates[0][p];
         current_node->left_coordinates[1][p] = left_coordinates[1][p];
         current_node->left_colors[p] = left_colors[p];
+        cout << current_node->left_coordinates[0][p] << " " << current_node->left_coordinates[1][p] << " " << current_node->left_colors[p] << endl;
     }
+    cout << "*****************************************************************************" << endl;
     for (int k=0;k<current_node->rline;k++) {
         current_node->right_coordinates[0][k] = right_coordinates[0][k];
         current_node->right_coordinates[1][k] = right_coordinates[1][k];
-        current_node->right_colors[k] = left_colors[k];
+        current_node->right_colors[k] = right_colors[k];
+        cout << current_node->right_coordinates[0][k] << " " << current_node->right_coordinates[1][k] << " " << current_node->right_colors[k] << endl;
     }
 }
 float calculation (int *LYellow, int *LRed, int *LGreen, int *RYellow, int *RRed, int *RGreen, int *lines) {

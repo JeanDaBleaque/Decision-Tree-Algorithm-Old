@@ -6,7 +6,9 @@ void getData();
 typedef class Node{
 public:
     char perm;
-    int line = 0, lline = 0, rline = 0;
+    int line = 0;
+    int lline = 0;
+    int rline = 0;
     float exp_coordinate;
     int exp_axis;
     float **coordinates;
