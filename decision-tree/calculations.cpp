@@ -33,8 +33,50 @@ void printInfo (Node *R, Node *LN, Node *RN) {
     cout << "Right Node I: " << RN->I << endl;
 }
 void extractCoords (Node *current_node) {
+    float **left_coordinates;
+    int *left_colors;
+    float **right_coordinates;
+    int *right_colors;
+    int left_count = 0, right_count = 0;
+    left_coordinates = new float*[2];
+    right_coordinates = new float*[2];
+    for (int i=0;i<2;i++) {
+        left_coordinates[i] = new float[current_node->line];
+        right_coordinates[i] = new float[current_node->line];
+    }
+    left_colors = new int[current_node->line];
+    right_colors = new int[current_node->line];
+    /*
     for (int i=0;i<current_node->line;i++) {
         cout << current_node->coordinates[0][i] << " " << current_node->coordinates[1][i] << " " << current_node->colors[i] <<endl;
+    }
+    */
+    for (int j=0;j<current_node->line;j++) {
+        if (current_node->coordinates[current_node->exp_axis][j]<current_node->exp_coordinate) {
+            left_coordinates[0][j] = current_node->coordinates[0][j];
+            left_coordinates[1][j] = current_node->coordinates[1][j];
+            left_colors[j] = current_node->colors[j];
+            left_count++;
+        }
+        else {
+            right_coordinates[0][j] = current_node->coordinates[0][j];
+            right_coordinates[1][j] = current_node->coordinates[1][j];
+            right_colors[j] = current_node->colors[j];
+            right_count++;
+        }
+    }
+    current_node->lline = left_count;
+    current_node->rline = right_count;
+    current_node->refreshCoords();
+    for (int p=0;p<current_node->lline;p++) {
+        current_node->left_coordinates[0][p] = left_coordinates[0][p];
+        current_node->left_coordinates[1][p] = left_coordinates[1][p];
+        current_node->left_colors[p] = left_colors[p];
+    }
+    for (int k=0;k<current_node->rline;k++) {
+        current_node->right_coordinates[0][k] = right_coordinates[0][k];
+        current_node->right_coordinates[1][k] = right_coordinates[1][k];
+        current_node->right_colors[k] = left_colors[k];
     }
 }
 float calculation (int *LYellow, int *LRed, int *LGreen, int *RYellow, int *RRed, int *RGreen, int *lines) {
@@ -254,8 +296,6 @@ int Node::extractData(Node *start_Node, int *lines, float **coords, int *colors,
         }
         //cout << "********************************************************************************" << endl;
         infGain(cur_Node, coords, colors, lines);
-        cout << "Left Count = " << cur_Node->LCount << endl;
-        cout << "Right Count = " << cur_Node->RCount << endl;
     }
     extractCoords(cur_Node);
 }
