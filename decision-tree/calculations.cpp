@@ -3,9 +3,6 @@
 #include <fstream>
 #include <cmath>
 #include <unistd.h>
-Node *Root;
-Node *LNode;
-Node *RNode;
 void printInfo (Node *R, Node *LN, Node *RN) {
     cout << "Root Coordinates: ";
     if (R->exp_axis == 0) {
@@ -35,8 +32,10 @@ void printInfo (Node *R, Node *LN, Node *RN) {
     cout << RN->exp_coordinate << endl;
     cout << "Right Node I: " << RN->I << endl;
 }
-void extractCoords () {
-
+void extractCoords (Node *current_node) {
+    for (int i=0;i<current_node->line;i++) {
+        cout << current_node->coordinates[0][i] << " " << current_node->coordinates[1][i] << " " << current_node->colors[i] <<endl;
+    }
 }
 float calculation (int *LYellow, int *LRed, int *LGreen, int *RYellow, int *RRed, int *RGreen, int *lines) {
     float sYellow = (float)(*LYellow+*RYellow)/(*lines); //Summition of Yellow Apples
@@ -118,6 +117,105 @@ void getData () {
     goNode->extractData(goNode, &lines, array, arr, &perm);
 }
 //Infgain here!
+void infGain (Node *current_node, float **coords, int *colors, int *lines) {
+    srand(time(nullptr));
+    cout << current_node->perm << endl;
+    int randAxis;
+    int control = 0;
+    float randCoords;
+    float infGainVar = 0;
+    float curInf = 0;
+    static int leftArray[3];
+    static int rightArray[3];
+    cout << current_node->perm << endl;
+    if (current_node->perm == 'S') {
+        control = 1;
+    }
+    for (int i=0;i<100;i++) {
+        randAxis = rand() % 2; //
+        if (control == 1) {
+            cout << "test" << endl;
+            randCoords = (((float)rand())/RAND_MAX * (float)7);
+        }
+        else {
+            if (current_node->pre_Node->exp_axis == randAxis) {
+                if (current_node->perm == 'L') {
+                    randCoords = (((float)rand()*5));
+                }
+                else if (current_node->perm == 'R') {
+                    randCoords = current_node->pre_Node->exp_coordinate + (((float)rand()*5));
+                }
+            }
+            else {
+                randCoords = (((float)rand())/RAND_MAX * (float)7);
+            }
+        }
+        for (int j=0;j<*lines;j++) {
+            if (randAxis == 0) {
+                if (coords[0][j]<randCoords) {
+                    if (colors[j] == 1) {
+                        leftArray[0]++;
+                    }
+                    else if (colors[j] == 2) {
+                        leftArray[1]++;
+                    }
+                    else if (colors[j] == 3) {
+                        leftArray[2]++;
+                    }
+                }
+                else {
+                    if (colors[j] == 1) {
+                        rightArray[0]++;
+                    }
+                    else if (colors[j] == 2) {
+                        rightArray[1]++;
+                    }
+                    else if (colors[j] == 3) {
+                        rightArray[2]++;
+                    }
+                }
+            }
+            else if (randAxis == 1) {
+                if (coords[1][j]<randCoords) {
+                    if (colors[j] == 1) {
+                        leftArray[0]++;
+                    }
+                    else if (colors[j] == 2) {
+                        leftArray[1]++;
+                    }
+                    else if (colors[j] == 3) {
+                        leftArray[2]++;
+                    }
+                }
+                else {
+                    if (colors[j] == 1) {
+                        rightArray[0]++;
+                    }
+                    else if (colors[j] == 2) {
+                        rightArray[1]++;
+                    }
+                    else if (colors[j] == 3) {
+                        rightArray[2]++;
+                    }
+                }
+            }
+        }
+        curInf = calculation(&leftArray[0], &leftArray[1], &leftArray[2], &rightArray[0], &rightArray[1], &rightArray[2], lines);
+        if (curInf>infGainVar) {
+            infGainVar = curInf;
+            current_node->I = curInf;
+            current_node->exp_axis = randAxis;
+            current_node->exp_coordinate = randCoords;
+        }
+        for (int k=0;k<=2;k++) {
+            leftArray[k] = 0;
+            rightArray[k] = 0;
+        }
+    }
+    cout << "Selected infGainVar = " << current_node->I << endl;
+    cout << "Selected axis = " << current_node->exp_axis << endl;
+    cout << "Selected coordinates = " << current_node->exp_coordinate << endl;
+}
 int Node::extractData(Node *start_Node, int *lines, float **coords, int *colors, char *perm) {
     ptr_Node cur_Node;
     int newLine = 0;
@@ -125,6 +223,17 @@ int Node::extractData(Node *start_Node, int *lines, float **coords, int *colors,
         cur_Node = new Node;
         cur_Node->current_Depth = 0;
         start_Node = cur_Node;
+        cur_Node->perm = 'S';
+        cur_Node->pre_Node = nullptr;
+        cur_Node->line = *lines;
+        cur_Node->refreshNode();
+        for (int i=0;i<cur_Node->line;i++) {
+            cout << "test" << endl;
+            cur_Node->coordinates[0][i] = coords[0][i];
+            cout << i << ". " << cur_Node->coordinates[0][i] << endl;
+            cur_Node->coordinates[1][i] = coords[1][i];
+            cur_Node->colors[i] = colors[i];
+        }
     }
     else {
         cur_Node = new Node;
@@ -140,21 +249,13 @@ int Node::extractData(Node *start_Node, int *lines, float **coords, int *colors,
     if (cur_Node) {
         cout << "Current Node created!" << endl;
         cout << "Total lines = " << *lines << endl;
-        cur_Node->line = *lines;
-        cur_Node->refreshNode();
         if (cur_Node->current_Depth < 2) {
             cout << "Current Side: " << cur_Node->perm << ". Current Depth = " << cur_Node->current_Depth << endl;
-            //inf gain here!
         }
+        //cout << "********************************************************************************" << endl;
+        infGain(cur_Node, coords, colors, lines);
         cout << "Left Count = " << cur_Node->LCount << endl;
         cout << "Right Count = " << cur_Node->RCount << endl;
-        if (start_Node == nullptr) {
-            for (int i=0;i<*lines<i++) {
-                cur_Node->coordinates[0][i] = coords[0][i];
-                cur_Node->coordinates[1][i] = coords[1][i];
-                cur_Node->colors[i] = colors[i];
-                newLine++;
-            }
-        }
     }
+    extractCoords(cur_Node);
 }
