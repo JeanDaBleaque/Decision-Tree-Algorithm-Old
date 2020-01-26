@@ -39,7 +39,7 @@ void extractCoords (Node *current_node) {
     int *right_colors;
     int left_count = 0;
     int right_count = 0;
-    cout << "current" << current_node->line << endl;
+    cout << "Current Line: " << current_node->line << endl;
     left_coordinates = new float*[2];
     right_coordinates = new float*[2];
     for (int i=0;i<2;i++) {
@@ -167,12 +167,14 @@ void getData () {
     goNode->extractData(goNode, &lines, array, arr, &perm);
 }
 //Infgain here!
-void infGain (Node *current_node, float **coords, int *colors, int *lines) {
+void infGain (Node *current_node, int *lines) {
     srand(time(nullptr));
     cout << current_node->perm << endl;
     int randAxis;
     int control = 0;
     float randCoords;
+    float *PrandCoords;
+    PrandCoords = &randCoords;
     float infGainVar = 0;
     float curInf = 0;
     static int leftArray[3];
@@ -185,66 +187,66 @@ void infGain (Node *current_node, float **coords, int *colors, int *lines) {
         randAxis = rand() % 2; //
         if (control == 1) {
             cout << "test" << endl;
-            randCoords = (((float)rand())/RAND_MAX * (float)7);
+            *PrandCoords = (((float)rand())/RAND_MAX * (float)7);
         }
         else {
             if (current_node->pre_Node->exp_axis == randAxis) {
                 if (current_node->perm == 'L') {
-                    randCoords = (((float)rand()*5));
+                    *PrandCoords = (((float)rand()*5));
                 }
                 else if (current_node->perm == 'R') {
-                    randCoords = current_node->pre_Node->exp_coordinate + (((float)rand()*5));
+                    *PrandCoords = current_node->pre_Node->exp_coordinate + (((float)rand()*5));
                 }
             }
             else {
-                randCoords = (((float)rand())/RAND_MAX * (float)7);
+                *PrandCoords = (((float)rand())/RAND_MAX * (float)7);
             }
         }
         for (int j=0;j<*lines;j++) {
             if (randAxis == 0) {
-                if (coords[0][j]<randCoords) {
-                    if (colors[j] == 1) {
+                if (current_node->coordinates[0][j]<randCoords) {
+                    if (current_node->colors[j] == 1) {
                         leftArray[0]++;
                     }
-                    else if (colors[j] == 2) {
+                    else if (current_node->colors[j] == 2) {
                         leftArray[1]++;
                     }
-                    else if (colors[j] == 3) {
+                    else if (current_node->colors[j] == 3) {
                         leftArray[2]++;
                     }
                 }
                 else {
-                    if (colors[j] == 1) {
+                    if (current_node->colors[j] == 1) {
                         rightArray[0]++;
                     }
-                    else if (colors[j] == 2) {
+                    else if (current_node->colors[j] == 2) {
                         rightArray[1]++;
                     }
-                    else if (colors[j] == 3) {
+                    else if (current_node->colors[j] == 3) {
                         rightArray[2]++;
                     }
                 }
             }
             else if (randAxis == 1) {
-                if (coords[1][j]<randCoords) {
-                    if (colors[j] == 1) {
+                if (current_node->coordinates[1][j]<randCoords) {
+                    if (current_node->colors[j] == 1) {
                         leftArray[0]++;
                     }
-                    else if (colors[j] == 2) {
+                    else if (current_node->colors[j] == 2) {
                         leftArray[1]++;
                     }
-                    else if (colors[j] == 3) {
+                    else if (current_node->colors[j] == 3) {
                         leftArray[2]++;
                     }
                 }
                 else {
-                    if (colors[j] == 1) {
+                    if (current_node->colors[j] == 1) {
                         rightArray[0]++;
                     }
-                    else if (colors[j] == 2) {
+                    else if (current_node->colors[j] == 2) {
                         rightArray[1]++;
                     }
-                    else if (colors[j] == 3) {
+                    else if (current_node->colors[j] == 3) {
                         rightArray[2]++;
                     }
                 }
@@ -269,9 +271,11 @@ void infGain (Node *current_node, float **coords, int *colors, int *lines) {
 int Node::extractData(Node *start_Node, int *lines, float **coords, int *colors, char *perm) {
     ptr_Node cur_Node;
     int newLine = 0;
+    char lPerm;
+    char rPerm;
     if (start_Node == nullptr) {
         cur_Node = new Node;
-        cur_Node->current_Depth = 0;
+        cur_Node->depth = 0;
         start_Node = cur_Node;
         cur_Node->perm = 'S';
         cur_Node->pre_Node = nullptr;
@@ -289,21 +293,43 @@ int Node::extractData(Node *start_Node, int *lines, float **coords, int *colors,
         cur_Node = new Node;
         if (*perm == 'L') {
             start_Node->left_Node = cur_Node;
+            cur_Node->perm = 'L';
+            cur_Node->line = *lines;
+            cur_Node->pre_Node = start_Node;
+            cur_Node->refreshNode();
+            cur_Node->coordinates = cur_Node->pre_Node->left_coordinates;
+            cur_Node->colors = cur_Node->pre_Node->left_colors;
+            cur_Node->depth = cur_Node->pre_Node->depth + 1;
+            for (int i=0;i<cur_Node->line;i++) {
+                cout << cur_Node->coordinates[0][i] << " " << cur_Node->coordinates[1][i] << " " << cur_Node->colors[i] << endl;
+            }
         }
         else if (*perm == 'R') {
             start_Node->right_Node = cur_Node;
+            cur_Node->perm = 'R';
+            cur_Node->line = *lines;
+            cur_Node->pre_Node = start_Node;
+            cur_Node->refreshNode();
+            cur_Node->coordinates = cur_Node->pre_Node->right_coordinates;
+            cur_Node->colors = cur_Node->pre_Node->right_colors;
+            cur_Node->depth = cur_Node->pre_Node->depth + 1;
         }
     }
-    float *randCoord;
-    int *randAxis;
     if (cur_Node) {
         cout << "Current Node created!" << endl;
         cout << "Total lines = " << *lines << endl;
-        if (cur_Node->current_Depth < 2) {
-            cout << "Current Side: " << cur_Node->perm << ". Current Depth = " << cur_Node->current_Depth << endl;
+        if (cur_Node->depth < 2) { //cur_Node->perm == 'S'
+            cout << "Current Side: " << cur_Node->perm << ". Current Depth = " << cur_Node->depth << endl;
+            //cout << "********************************************************************************" << endl;
+            infGain(cur_Node, &cur_Node->line);
+            extractCoords(cur_Node);
+            lPerm = 'L';
+            extractData(start_Node, &cur_Node->lline, cur_Node->left_coordinates, cur_Node->left_colors, &cur_Node->perm);
+            //rPerm = 'R';
+            //extractData(start_Node, &cur_Node->lline, cur_Node->left_coordinates, cur_Node->left_colors, &rPerm);
         }
-        //cout << "********************************************************************************" << endl;
-        infGain(cur_Node, coords, colors, lines);
     }
-    extractCoords(cur_Node);
+    else {
+        cout << "Memory allocation failed!" << endl;
+    }
 }

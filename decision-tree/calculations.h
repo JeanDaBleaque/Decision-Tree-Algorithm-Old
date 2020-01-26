@@ -9,6 +9,7 @@ public:
     int line = 0;
     int lline = 0;
     int rline = 0;
+    int depth = 0;
     float exp_coordinate;
     int exp_axis;
     float **coordinates;
@@ -20,7 +21,6 @@ public:
     Node *pre_Node;
     Node *left_Node;
     Node *right_Node;
-    int current_Depth = 0;
     float I;
     int LCount = 0;
     int LYellow = 0;
