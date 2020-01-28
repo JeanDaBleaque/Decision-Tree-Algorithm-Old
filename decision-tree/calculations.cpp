@@ -170,6 +170,9 @@ void getData () {
 void infGain (Node *current_node, int *lines) {
     srand(time(nullptr));
     cout << current_node->perm << endl;
+    unsigned int microseconds;
+    //microseconds = 1000000;
+    usleep(microseconds);
     int randAxis;
     int control = 0;
     float randCoords;
@@ -183,7 +186,7 @@ void infGain (Node *current_node, int *lines) {
     if (current_node->perm == 'S') {
         control = 1;
     }
-    for (int i=0;i<100;i++) {
+    for (int i=0;i<1000;i++) {
         randAxis = rand() % 2; //
         if (control == 1) {
             cout << "test" << endl;
@@ -318,13 +321,14 @@ int Node::extractData(Node *start_Node, int *lines, float **coords, int *colors,
     if (cur_Node) {
         cout << "Current Node created!" << endl;
         cout << "Total lines = " << *lines << endl;
-        if (cur_Node->depth < 2) { //cur_Node->perm == 'S'
+        if (cur_Node->depth <= 2) { //cur_Node->perm == 'S'
             cout << "Current Side: " << cur_Node->perm << ". Current Depth = " << cur_Node->depth << endl;
             //cout << "********************************************************************************" << endl;
             infGain(cur_Node, &cur_Node->line);
+            start_Node = cur_Node;
             extractCoords(cur_Node);
             lPerm = 'L';
-            extractData(start_Node, &cur_Node->lline, cur_Node->left_coordinates, cur_Node->left_colors, &cur_Node->perm);
+            extractData(start_Node, &cur_Node->lline, cur_Node->left_coordinates, cur_Node->left_colors, &lPerm);
             //rPerm = 'R';
             //extractData(start_Node, &cur_Node->lline, cur_Node->left_coordinates, cur_Node->left_colors, &rPerm);
         }
