@@ -171,8 +171,8 @@ void infGain (Node *current_node, int *lines) {
     srand(time(nullptr));
     cout << current_node->perm << endl;
     unsigned int microseconds;
-    //microseconds = 1000000;
-    usleep(microseconds);
+    microseconds = 1000000;
+    //usleep(microseconds);
     int randAxis;
     int control = 0;
     float randCoords;
